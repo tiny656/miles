@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 
-RUNNER = "NAOSENSE"
+RUNNER = "tiny656"
 
 
 def number_label_fmt(val: float, pos) -> str:
