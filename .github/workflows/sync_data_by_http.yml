@@ -18,8 +18,8 @@ on:
 
 env:
   # change env here
-  GITHUB_NAME: naosense
-  GITHUB_EMAIL: pingao777@gmail.com
+  GITHUB_NAME: tiny656
+  GITHUB_EMAIL: tiny656@hotmail.com
 
 jobs:
   sync:
