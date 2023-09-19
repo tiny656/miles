@@ -48,9 +48,3 @@ jobs:
           git config --local user.name "${{ env.GITHUB_NAME }}"
           git commit -a -m 'sync running data by push' || echo "nothing to commit"
           git push || echo "nothing to push"
-  sync_by_push:
-    if: needs.sync.result == 'success'
-    name: Sync data by running.csv push
-    uses: ./.github/workflows/sync_data_by_push.yml
-    needs:
-      - sync
