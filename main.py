@@ -10,15 +10,6 @@ from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 RUNNER = "tiny656"
 
 
-def number_label_fmt(val: float, pos) -> str:
-    if val > 1000000:
-        return f"{val / 1000000:.0f}M"
-    elif val > 1000:
-        return f"{val / 1000:.0f}K"
-    else:
-        return f"{val:.0f}"
-
-
 def pace_label_fmt(val: float, pos) -> str:
     min = val // 60
     sec = val % 60
@@ -33,7 +24,6 @@ def plot_running() -> None:
         formatter = mdates.ConciseDateFormatter(locator)
         ax.xaxis.set_major_locator(locator)
         ax.xaxis.set_major_formatter(formatter)
-        ax.yaxis.set_major_formatter(tick.FuncFormatter(number_label_fmt))
         ax.tick_params(axis="both", which="major", labelsize="small", length=5)
         ax.tick_params(axis="both", which="minor", labelsize="small", length=5)
         ax.set_title("Running is not a sport for health, it is a way of life!")
@@ -159,7 +149,9 @@ def sync_data(dt_str: str, distance_str: str, heart_str: str, pace_str: str) -> 
         ]
         if new_data:
             with open("running.csv", "a") as f:
-                for dt_str, distance, heart, pace in sorted(new_data, key=lambda t: t[0]):
+                for dt_str, distance, heart, pace in sorted(
+                    new_data, key=lambda t: t[0]
+                ):
                     f.write(f"{dt_str},{distance},{heart},{pace}\n")
         else:
             print("no new data")
