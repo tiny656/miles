@@ -47,7 +47,7 @@ jobs:
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
           git config --local user.name "${{ env.GITHUB_NAME }}"
           git commit -a -m 'sync running.csv from running_page repo ' || echo "nothing to commit"
-          git push || echo "nothing to push"
+          git pull && git push || echo "nothing to push"
   call_sync_by_push:
     if: needs.sync.result == 'success'
     name: call sync by push
