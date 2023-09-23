@@ -56,4 +56,4 @@ jobs:
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
           git config --local user.name "${{ env.GITHUB_NAME }}"
           git commit -a -m 'sync running data by http' || echo "nothing to commit"
-          git push || echo "nothing to push"
+          git pull --ff-only && git push || echo "nothing to push"
