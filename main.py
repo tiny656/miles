@@ -20,15 +20,15 @@ def plot_running() -> None:
     with plt.xkcd():
         from matplotlib import patheffects
         plt.rcParams.update({
-            'path.effects': [ patheffects.withStroke(linewidth=4, foreground="#343434")],
-            'figure.facecolor': '#343434',
+            'path.effects': [ patheffects.withStroke(linewidth=4, foreground="#222222")],
+            'figure.facecolor': '#222222',
             'axes.edgecolor': 'w',
         })
         fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
         ax.spines[["top", "right"]].set_visible(False)
         locator = mdates.AutoDateLocator(minticks=3, maxticks=7)
         formatter = mdates.ConciseDateFormatter(locator)
-        ax.set_facecolor("#343434")
+        ax.set_facecolor("#222222")
         ax.xaxis.set_major_locator(locator)
         ax.xaxis.set_major_formatter(formatter)
         ax.tick_params(axis="both", which="major", labelsize="small", length=5, color="w", labelcolor="w")
@@ -38,7 +38,7 @@ def plot_running() -> None:
         dts, accs, distances, hearts, paces = get_running_data()
         ax.plot(dts, accs, color="#d62728")
         ax2 = plt.axes([0.1, 0.80, 0.3, 0.1], facecolor="w")
-        ax2.set_facecolor("#343434")
+        ax2.set_facecolor("#222222")
         ax2.boxplot(
             hearts,
             labels=["H"],
@@ -56,7 +56,7 @@ def plot_running() -> None:
         ax2.tick_params(axis="y", which="major", labelsize="xx-small", length=0, color="w", labelcolor="w")
 
         ax3 = plt.axes([0.1, 0.65, 0.3, 0.1])
-        ax3.set_facecolor("#343434")
+        ax3.set_facecolor("#222222")
         ax3.boxplot(
             [p.minute * 60 + p.second for p in paces],
             labels=["P"],
@@ -98,7 +98,7 @@ def plot_running() -> None:
         angles_rad = make_circular([a * math.pi / 180 for a in range(0, 360, 30)])
 
         ax4 = plt.axes([0.1, 0.3, 0.25, 0.25], polar=True)
-        ax4.set_facecolor("#343434")
+        ax4.set_facecolor("#222222")
         ax4.plot(angles_rad, attendance_all, "-", linewidth=1, color="#ff7f0e")
         ax4.fill(angles_rad, attendance_all, alpha=0.15, zorder=2, color="#ff7f0e")
         ax4.plot(angles_rad, attendance_this_year, "-", linewidth=1, color="#2ca02c")
