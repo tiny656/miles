@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 
-RUNNER = "tiny656"
+RUNNER = "RealTiny656"
 
 T = TypeVar("T")
 K = TypeVar("K")
