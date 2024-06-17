@@ -42,6 +42,13 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if: steps.pip-cache.outputs.cache-hit != 'true'
+      - name: Install fonts
+        run: |
+          mkdir -p ~/Library/Fonts
+          curl -L -o ~/Library/Fonts/xkcd-script.ttf https://github.com/ipython/xkcd-font/raw/master/xkcd-script/font/xkcd-script.ttf
+          curl -L -o /tmp/comicneue-master.zip https://github.com/crozynski/comicneue/releases/download/2.51/comicneue-master.zip
+          unzip /tmp/comicneue-master.zip -d /tmp/comicneue
+          cp /tmp/comicneue/comicneue-master/Fonts/TTF/*.ttf ~/Library/Fonts/
       - name: Generate new SVG file
         run: |
           python main.py push
