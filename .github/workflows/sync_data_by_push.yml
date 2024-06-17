@@ -35,6 +35,8 @@ jobs:
         run: |
           mkdir -p ~/Library/Fonts
           curl -L -o ~/Library/Fonts/xkcd-script.ttf https://github.com/ipython/xkcd-font/raw/master/xkcd-script/font/xkcd-script.ttf
+          curl -L -o ~/Library/Fonts/xkcd-Regular.otf https://github.com/ipython/xkcd-font/raw/master/xkcd/build/xkcd-Regular.otf
+          curl -L -o ~/Library/Fonts/xkcd.otf https://github.com/ipython/xkcd-font/raw/master/xkcd/build/xkcd.otf
           curl -L -o /tmp/comicneue-master.zip https://github.com/crozynski/comicneue/releases/download/2.51/comicneue-master.zip
           unzip /tmp/comicneue-master.zip -d /tmp/comicneue
           cp /tmp/comicneue/comicneue-master/Fonts/TTF/ComicNeue/*.ttf ~/Library/Fonts/
