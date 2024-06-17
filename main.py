@@ -41,7 +41,7 @@ def plot_running() -> None:
         ax2.set_facecolor("#222222")
         ax2.boxplot(
             hearts,
-            labels=["H"],
+            tick_labels=["H"],
             vert=False,
             showfliers=False,
             meanline=True,
@@ -59,7 +59,7 @@ def plot_running() -> None:
         ax3.set_facecolor("#222222")
         ax3.boxplot(
             [p.minute * 60 + p.second for p in paces],
-            labels=["P"],
+            tick_labels=["P"],
             vert=False,
             showfliers=False,
             meanline=True,
