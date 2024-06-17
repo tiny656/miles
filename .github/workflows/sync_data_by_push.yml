@@ -23,32 +23,21 @@ jobs:
         with:
           ref: master
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11.4
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-      - name: pip cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: '3.x'
+          cache: 'pip'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if: steps.pip-cache.outputs.cache-hit != 'true'
       - name: Install fonts
         run: |
           mkdir -p ~/Library/Fonts
           curl -L -o ~/Library/Fonts/xkcd-script.ttf https://github.com/ipython/xkcd-font/raw/master/xkcd-script/font/xkcd-script.ttf
           curl -L -o /tmp/comicneue-master.zip https://github.com/crozynski/comicneue/releases/download/2.51/comicneue-master.zip
           unzip /tmp/comicneue-master.zip -d /tmp/comicneue
-          cp /tmp/comicneue/comicneue-master/Fonts/TTF/*.ttf ~/Library/Fonts/
+          cp /tmp/comicneue/comicneue-master/Fonts/TTF/ComicNeue/*.ttf ~/Library/Fonts/
       - name: Generate new SVG file
         run: |
           python main.py push
