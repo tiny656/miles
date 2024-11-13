@@ -31,10 +31,15 @@ jobs:
         run: |
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
           git config --local user.name "${{ env.GITHUB_NAME }}"
-          git commit -a -m 'sync running.csv from running_page repo ' || echo "nothing to commit"
-          git push || echo "nothing to push"
+          git commit -a -m 'sync running.csv from running_page repo' || echo "nothing to commit"
+          if [ "$(git log -1 --pretty=%B)" != "nothing to commit" ]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            git push || echo "nothing to push"
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+          fi
   call_sync_by_push:
-    if: needs.sync.result == 'success'
+    if: needs.sync.result == 'success' && needs.sync.outputs.changes_detected == 'true'
     name: call sync by push
     uses: ./.github/workflows/sync_data_by_push.yml
     needs:
