@@ -9,15 +9,17 @@ import asyncio
 import logging
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 import cloudscraper
 import garth
 import httpx
 
-GITHUB_WORKFLOW_ID = ""
+GITHUB_WORKFLOW_ID = "65380959"
 
-GITHUB_TOKEN = ""
+GARMIN_USERNAME = os.getenv("GARMIN_USERNAME")
+GARMIN_PASSWORD = os.getenv("GARMIN_PASSWORD")
+GITHUB_TOKEN = os.getenv("GH_TOKEN")
 
 GITHUB_WORKFLOW_URL = (
     "https://api.github.com/repos/naosense/miles/actions/workflows/%s/dispatches"
@@ -167,8 +169,6 @@ class GarminConnectTooManyRequestsError(Exception):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("email", nargs="?", help="email of garmin")
-    parser.add_argument("password", nargs="?", help="password of garmin")
     parser.add_argument(
         "--is-cn",
         dest="is_cn",
@@ -182,24 +182,17 @@ if __name__ == "__main__":
         help="if is only for running",
     )
     options = parser.parse_args()
-    email = options.email
-    password = options.password
+    email = GARMIN_USERNAME
+    password = GARMIN_PASSWORD
     auth_domain = "CN" if options.is_cn else None
     is_only_running = options.only_run
-    if not email or not password:
-        logger.error("Missing email or password")
-        sys.exit(1)
     if options.is_cn:
         garth.configure(domain="garmin.cn")
     garth.login(email, password)
     secret_string = garth.client.dumps()
     client = Garmin(secret_string, auth_domain, is_only_running)
-    if not os.path.exists("latest"):
-        logger.error("no latest file")
-        sys.exit(-1)
-    with open("latest", "r") as f:
-        latest_dt = datetime.strptime(f.readline().strip(), "%Y-%m-%d %H:%M:%S")
-    start_date = latest_dt.date() + timedelta(days=1)
+    today = date.today()
+    yesterday = today - timedelta(days=1)
     if sys.version_info < (3, 10):
         loop = asyncio.get_event_loop()
     else:
@@ -209,7 +202,7 @@ if __name__ == "__main__":
             loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
     runs = loop.run_until_complete(
-        client.get_activities(0, 20, start_date=f"{start_date:%Y-%m-%d}")
+        client.get_activities(0, 20, start_date=f"{yesterday:%Y-%m-%d}")
     )
     if runs:
         new_data = [
@@ -226,7 +219,7 @@ if __name__ == "__main__":
                     dt_str := run["startTimeLocal"], "%Y-%m-%d %H:%M:%S"
                 )
             )
-            > latest_dt
+            > datetime(year=yesterday.year, month=yesterday.month, day=yesterday.day)
             and (distance := run["distance"] / 1000) > 0
             and (heart := run["averageHR"])
             and (duration := run["duration"])
@@ -242,8 +235,6 @@ if __name__ == "__main__":
                 ",".join(dts), ",".join(distances), ",".join(hearts), ",".join(paces)
             ):
                 logger.info("notice github success")
-                with open("latest", "w") as f:
-                    f.write(dts[-1])
             else:
                 logger.error("notice github fail")
         else:
