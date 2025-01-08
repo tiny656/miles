@@ -1,0 +1,32 @@
+name: Sync running data from garmin
+
+on:
+  schedule:
+    # utc time
+    - cron: '0 18 * * *'
+
+env:
+  GARMIN_USERNAME: ${{ secrets.GARMIN_USERNAME }}
+  GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+jobs:
+  sync:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ./syncer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.4
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Sync garmin data
+        run: |
+          python garmin.py --is-cn --only-run
