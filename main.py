@@ -4,6 +4,7 @@ import math
 import sys
 from datetime import datetime
 from typing import Callable, Optional, TypeVar
+import numpy as np
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -19,11 +20,16 @@ K = TypeVar("K")
 def plot_running() -> None:
     with plt.xkcd():
         from matplotlib import patheffects
-        plt.rcParams.update({
-            'path.effects': [ patheffects.withStroke(linewidth=4, foreground="#222222")],
-            'figure.facecolor': '#222222',
-            'axes.edgecolor': 'w',
-        })
+
+        plt.rcParams.update(
+            {
+                "path.effects": [
+                    patheffects.withStroke(linewidth=4, foreground="#222222")
+                ],
+                "figure.facecolor": "#222222",
+                "axes.edgecolor": "w",
+            }
+        )
         fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
         ax.spines[["top", "right"]].set_visible(False)
         locator = mdates.AutoDateLocator(minticks=3, maxticks=7)
@@ -31,47 +37,146 @@ def plot_running() -> None:
         ax.set_facecolor("#222222")
         ax.xaxis.set_major_locator(locator)
         ax.xaxis.set_major_formatter(formatter)
-        ax.tick_params(axis="both", which="major", labelsize="small", length=5, color="w", labelcolor="w")
-        ax.tick_params(axis="both", which="minor", labelsize="small", length=5, color="w", labelcolor="w")
-        ax.set_title("Running is not a sport for health, it is a way of life!", color="w")
+        ax.tick_params(
+            axis="both",
+            which="major",
+            labelsize="small",
+            length=5,
+            color="w",
+            labelcolor="w",
+        )
+        ax.tick_params(
+            axis="both",
+            which="minor",
+            labelsize="small",
+            length=5,
+            color="w",
+            labelcolor="w",
+        )
+        ax.set_title(
+            "Running is not a sport for health, it is a way of life!", color="w"
+        )
 
         dts, accs, distances, hearts, paces = get_running_data()
+        this_year = datetime.now().year
+
         ax.plot(dts, accs, color="#d62728")
         ax2 = plt.axes([0.1, 0.80, 0.3, 0.1], facecolor="w")
         ax2.set_facecolor("#222222")
-        ax2.boxplot(
+        v11 = ax2.violinplot(
             hearts,
-            tick_labels=["H"],
-            vert=False,
-            showfliers=False,
-            meanline=True,
+            orientation="horizontal",
+            showmedians=True,
             showmeans=True,
-            widths=0.25,
-            boxprops=dict(color="w"),
-            capprops=dict(color="w"),
-            whiskerprops=dict(color="w"),
+            showextrema=False,
+            side="low",
         )
+        hearts_this_year = [
+            hearts[i] for i, dt in enumerate(dts) if dt.year == this_year
+        ]
+        v12 = ax2.violinplot(
+            hearts_this_year,
+            orientation="horizontal",
+            showmedians=True,
+            showmeans=True,
+            showextrema=False,
+            side="high",
+        )
+
+        for body in v11["bodies"]:
+            body.set_facecolor("#ff7f0e")
+            body.set_edgecolor("#ff7f0e")
+        for body in v12["bodies"]:
+            body.set_facecolor("#2ca02c")
+            body.set_edgecolor("#2ca02c")
+        v11["cmedians"].set_linewidth(1)
+        v11["cmedians"].set_color("#ff7f0e")
+        v12["cmedians"].set_linewidth(1)
+        v12["cmedians"].set_color("#2ca02c")
+        v11["cmeans"].set_linewidth(1)
+        v11["cmeans"].set_color("#ff7f0e")
+        v12["cmeans"].set_linewidth(1)
+        v12["cmeans"].set_color("#2ca02c")
+        v11["cmeans"].set_linestyle("--")
+        v12["cmeans"].set_linestyle("--")
+
+        hearts_percentile = np.percentile(hearts, [5, 95])
+        ax2.set_xlim(tuple(hearts_percentile))
+        ax2.set_yticklabels([])
         ax2.spines[["top", "right", "left", "bottom"]].set_visible(False)
-        ax2.tick_params(axis="x", which="major", labelsize="xx-small", length=2, color="w", labelcolor="w")
-        ax2.tick_params(axis="y", which="major", labelsize="xx-small", length=0, color="w", labelcolor="w")
+        ax2.tick_params(
+            axis="x",
+            which="major",
+            labelsize="xx-small",
+            length=2,
+            color="w",
+            labelcolor="w",
+        )
+        ax2.tick_params(
+            axis="y",
+            which="major",
+            labelsize="xx-small",
+            length=0,
+            color="w",
+            labelcolor="w",
+        )
 
         ax3 = plt.axes([0.1, 0.65, 0.3, 0.1])
         ax3.set_facecolor("#222222")
-        ax3.boxplot(
-            [mins * 60 + secs for (mins, secs) in paces],
-            labels=["P"],
-            vert=False,
-            showfliers=False,
-            meanline=True,
+        v21 = ax3.violinplot(
+            paces,
+            orientation="horizontal",
+            showmedians=True,
             showmeans=True,
-            widths=0.25,
-            boxprops=dict(color="w"),
-            capprops=dict(color="w"),
-            whiskerprops=dict(color="w"),
+            showextrema=False,
+            side="low",
         )
+        paces_this_year = [paces[i] for i, dt in enumerate(dts) if dt.year == this_year]
+        v22 = ax3.violinplot(
+            paces_this_year,
+            orientation="horizontal",
+            showmedians=True,
+            showmeans=True,
+            showextrema=False,
+            side="high",
+        )
+        for body in v21["bodies"]:
+            body.set_facecolor("#ff7f0e")
+            body.set_edgecolor("#ff7f0e")
+        for body in v22["bodies"]:
+            body.set_facecolor("#2ca02c")
+            body.set_edgecolor("#2ca02c")
+        v21["cmedians"].set_linewidth(1)
+        v21["cmedians"].set_color("#ff7f0e")
+        v22["cmedians"].set_linewidth(1)
+        v22["cmedians"].set_color("#2ca02c")
+        v21["cmeans"].set_linewidth(1)
+        v21["cmeans"].set_color("#ff7f0e")
+        v22["cmeans"].set_linewidth(1)
+        v22["cmeans"].set_color("#2ca02c")
+        v21["cmeans"].set_linestyle("--")
+        v22["cmeans"].set_linestyle("--")
+
+        paces_percentile = np.percentile(paces, [5, 95])
+        ax3.set_xlim(tuple(paces_percentile))
+        ax3.set_yticklabels([])
         ax3.spines[["top", "right", "left", "bottom"]].set_visible(False)
-        ax3.tick_params(axis="x", which="major", labelsize="xx-small", length=2, color="w", labelcolor="w")
-        ax3.tick_params(axis="y", which="major", labelsize="xx-small", length=0, color="w", labelcolor="w")
+        ax3.tick_params(
+            axis="x",
+            which="major",
+            labelsize="xx-small",
+            length=2,
+            color="w",
+            labelcolor="w",
+        )
+        ax3.tick_params(
+            axis="y",
+            which="major",
+            labelsize="xx-small",
+            length=0,
+            color="w",
+            labelcolor="w",
+        )
         ax3.xaxis.set_major_locator(tick.MaxNLocator(6))
         ax3.xaxis.set_major_formatter(tick.FuncFormatter(pace_label_fmt))
 
@@ -108,8 +213,22 @@ def plot_running() -> None:
         ax4.spines["polar"].set_linestyle("--")
         ax4.spines["polar"].set_linewidth(0.5)
         ax4.spines["polar"].set_color("grey")
-        ax4.tick_params(axis="x", which="major", labelsize="xx-small", length=0, color="w", labelcolor="w")
-        ax4.tick_params(axis="y", which="major", labelsize="xx-small", length=0, color="w", labelcolor="w")
+        ax4.tick_params(
+            axis="x",
+            which="major",
+            labelsize="xx-small",
+            length=0,
+            color="w",
+            labelcolor="w",
+        )
+        ax4.tick_params(
+            axis="y",
+            which="major",
+            labelsize="xx-small",
+            length=0,
+            color="w",
+            labelcolor="w",
+        )
         ax4.set_thetagrids(angles_deg, feature)
         ax4.set_yticks([20, 40, 60, 80, 100])
         ax4.set_yticklabels(["", "", "", "", "100%"])
@@ -117,7 +236,6 @@ def plot_running() -> None:
         ax4.grid(visible=True, lw=0.5, ls="--")
 
         years = dts[-1].year - dts[0].year + 1
-        this_year = datetime.now().year
         distance_this_year = sum(
             [distances[i] for i, dt in enumerate(dts) if dt.year == this_year]
         )
@@ -219,7 +337,7 @@ def groupby(data: list[T], key_func: Callable[[T], K]) -> dict[K, list[T]]:
 
 
 def get_running_data() -> (
-    tuple[list[datetime], list[float], list[float], list[int], list[tuple[int, int]]]
+    tuple[list[datetime], list[float], list[float], list[int], list[int]]
 ):
     data = []
     with open("running.csv") as file:
@@ -237,7 +355,7 @@ def get_running_data() -> (
                 secs = 0
             if distance <= 0.0:
                 continue
-            data.append((dt, distance, heart, (mins, secs)))
+            data.append((dt, distance, heart, mins * 60 + secs))
     data.sort(key=lambda t: t[0])
     acc = 0.0
     dts = []
