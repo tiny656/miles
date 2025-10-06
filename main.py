@@ -57,25 +57,26 @@ def plot_running() -> None:
             "Running is not a sport for health, it is a way of life!", color="w"
         )
 
-        dts, accs, distances, hearts, paces = get_running_data()
+        dts, accs, distances, heart_records, paces = get_running_data()
         this_year = datetime.now().year
+        heart_samples = [heart for _, heart in heart_records]
+        heart_samples_this_year = [
+            heart for dt, heart in heart_records if dt.year == this_year
+        ]
 
         ax.plot(dts, accs, color="#d62728")
         ax2 = plt.axes([0.1, 0.80, 0.3, 0.1], facecolor="w")
         ax2.set_facecolor("#222222")
         v11 = ax2.violinplot(
-            hearts,
+            heart_samples,
             orientation="horizontal",
             showmedians=True,
             showmeans=True,
             showextrema=False,
             side="low",
         )
-        hearts_this_year = [
-            hearts[i] for i, dt in enumerate(dts) if dt.year == this_year
-        ]
         v12 = ax2.violinplot(
-            hearts_this_year,
+            heart_samples_this_year,
             orientation="horizontal",
             showmedians=True,
             showmeans=True,
@@ -337,14 +338,13 @@ def groupby(data: list[T], key_func: Callable[[T], K]) -> dict[K, list[T]]:
 
 
 def get_running_data() -> (
-    tuple[list[datetime], list[float], list[float], list[int], list[int]]
+    tuple[
+        list[datetime], list[float], list[float], list[tuple[datetime, int]], list[int]
+    ]
 ):
     data = []
     with open("running.csv") as file:
         for line in file:
-            # if line is empty or starts with #, skip it
-            if not line.strip():
-                continue
             cols = line.rstrip().split(",")
             if cols[0] == "DT":
                 continue
@@ -364,17 +364,17 @@ def get_running_data() -> (
     dts = []
     accs = []
     distances = []
-    hearts = []
+    heart_records = []
     paces = []
-    for idx, (dt, distance, heart, pace) in enumerate(data):
+    for dt, distance, heart, pace in enumerate(data):
         acc += distance
         dts.append(dt)
         accs.append(acc)
         distances.append(distance)
-        if heart:
-            hearts.append(heart)
+        if heart is not None:
+            heart_records.append((dt, heart))
         paces.append(pace)
-    return dts, accs, distances, hearts, paces
+    return dts, accs, distances, heart_records, paces
 
 
 def sync_data(dt_str: str, distance_str: str, heart_str: str, pace_str: str) -> bool:
