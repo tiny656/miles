@@ -101,8 +101,8 @@ def plot_running() -> None:
         v11["cmeans"].set_linestyle("--")
         v12["cmeans"].set_linestyle("--")
 
-        hearts_percentile = np.percentile(hearts, [5, 95])
-        ax2.set_xlim(tuple(hearts_percentile))
+        heart_samples_percentile = np.percentile(heart_samples, [5, 95])
+        ax2.set_xlim(tuple(heart_samples_percentile))
         ax2.set_yticklabels([])
         ax2.spines[["top", "right", "left", "bottom"]].set_visible(False)
         ax2.tick_params(
@@ -366,7 +366,7 @@ def get_running_data() -> (
     distances = []
     heart_records = []
     paces = []
-    for dt, distance, heart, pace in enumerate(data):
+    for dt, distance, heart, pace in data:
         acc += distance
         dts.append(dt)
         accs.append(acc)
