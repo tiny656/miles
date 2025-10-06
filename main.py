@@ -342,6 +342,9 @@ def get_running_data() -> (
     data = []
     with open("running.csv") as file:
         for line in file:
+            # if line is empty or starts with #, skip it
+            if not line.strip():
+                continue
             cols = line.rstrip().split(",")
             if cols[0] == "DT":
                 continue
